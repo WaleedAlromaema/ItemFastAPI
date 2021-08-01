@@ -1,0 +1,42 @@
+version: "3.4"
+services:
+  mongo:
+     image: mongo
+     restart: always
+     container_name: MongoDB_Container
+     #environment:
+     #  MONGO_INITDB_ROOT_USERNAME: root
+     #  MONGO_INITDB_ROOT_PASSWORD: example
+     ports:
+      - 27017:27017
+     networks:
+      - mongodb_backend_network
+  items-fastapi:
+    build: .
+    ports:
+      - 8000:8000
+    container_name: items_fastapi_container
+    depends_on:
+      - mongo 
+    networks:
+      - mongodb_backend_network
+  
+  redis:
+    image: redis:latest
+    container_name: itemsfastapi_redis
+    #volumes:
+    #  - ./redis_data/redis/data:/data
+    ports:
+      - 6379:6379
+    networks:
+      - mongodb_backend_network
+
+  #flower:
+  #  image:  mher/flower:latest
+  #  command: ["--url_prefix=flower", "--broker=redis://redis:6379/2"]
+  #  ports:
+  #    - 5555:5555
+  #  restart: unless-stopped
+networks:
+    mongodb_backend_network:
+      driver: nat

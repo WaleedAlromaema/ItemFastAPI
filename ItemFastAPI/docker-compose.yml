@@ -1,0 +1,53 @@
+version: "3.4"
+services:
+ 
+  items-fastapi:
+    build: .
+    ports:
+      - 8000:8000
+    container_name: items_fastapi_container  
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - mongodb_backend_network
+    #command: celery -A celery_app.celery_app worker --pool=solo -l info -Q items-queue -c 1 -E
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - mongodb_backend_network
+
+  #rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: rabbitmq_container
+  #   ports:
+  #     - 5672:5672
+
+  #worker:
+  #  build: ./celery_app/
+  #  container_name: worker_container
+  #  depends_on:
+  #    - redis #rabbitmq
+  #flower:
+  #  image: mher/flower
+  #  container_name: flower_container
+  #  ports:
+  #    - 5555:5555
+  #  depends_on:
+  #    - rabbitmq
+  #  command:
+  #    - "--broker='amqp://localhost:5672//'"
+  mongo:
+     image: mongo
+     restart: always
+     container_name: MongoDB_Container
+     ports:
+      - 27017:27017
+     networks:
+      - mongodb_backend_network
+networks:
+    mongodb_backend_network:
+      driver: nat
+  
